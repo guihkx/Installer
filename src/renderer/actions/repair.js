@@ -13,6 +13,7 @@ import kill from "./utils/kill";
 import reset from "./utils/reset";
 import {showKillNotice} from "./utils/notices";
 import doSanityCheck from "./utils/sanity";
+import {isFlatpak, flatpakConfigDir} from "./paths";
 
 const KILL_DISCORD_PROGRESS = 20;
 const DELETE_APP_DIRS_PROGRESS = 50;
@@ -41,7 +42,9 @@ async function deleteModuleDirs(config) {
     const size = Object.keys(config).length;
     const progressPerLoop = (DELETE_MODULE_DIRS_PROGRESS - progress.value) / size;
     for (const channel in config) {
-        const roaming = path.join(remote.app.getPath("userData"), "..", platforms[channel].replace(" ", "").toLowerCase());
+        const roaming = isFlatpak
+            ? path.join(flatpakConfigDir, "discord")
+            : path.join(remote.app.getPath("userData"), "..", platforms[channel].replace(" ", "").toLowerCase());
         try {
             const versionDir = (await fs.readdir(roaming)).find(d => d.split(".").length > 2);
             if (await exists(path.join(versionDir, "modules"))) await del(versionDir, {force: true});

@@ -13,13 +13,14 @@ import reset from "./utils/reset";
 import kill from "./utils/kill";
 import {showRestartNotice} from "./utils/notices";
 import doSanityCheck from "./utils/sanity";
+import {isFlatpak, flatpakConfigDir} from "./paths";
 
 const MAKE_DIR_PROGRESS = 30;
 const DOWNLOAD_PACKAGE_PROGRESS = 60;
 const INJECT_SHIM_PROGRESS = 90;
 const RESTART_DISCORD_PROGRESS = 100;
 
-const bdFolder = path.join(remote.app.getPath("appData"), "BetterDiscord");
+const bdFolder = path.join(isFlatpak ? flatpakConfigDir : remote.app.getPath("appData"), "BetterDiscord");
 const bdDataFolder = path.join(bdFolder, "data");
 const bdPluginsFolder = path.join(bdFolder, "plugins");
 const bdThemesFolder = path.join(bdFolder, "themes");

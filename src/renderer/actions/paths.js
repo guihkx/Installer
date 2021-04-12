@@ -1,9 +1,19 @@
+const {execSync} = require("child_process");
 const fs = require("fs");
 const path = require("path");
 import {remote} from "electron";
 
-export const platforms = {stable: "Discord", ptb: "Discord PTB", canary: "Discord Canary"};
+export const isFlatpak = typeof process.env.BD_FLATPAK === "undefined" ? true : !!+process.env.BD_FLATPAK;
+export const flatpakConfigDir = isFlatpak
+    ? execSync("flatpak run --command=sh com.discordapp.Discord -c 'printf -- \"$XDG_CONFIG_HOME\"'").toString()
+    : "";
+export const platforms = {stable: "Discord"};
 export const locations = {stable: "", ptb: "", canary: ""};
+
+if (!isFlatpak) {
+    platforms.ptb = "Discord PTB";
+    platforms.canary = "Discord Canary";
+}
 
 const getDiscordPath = function(releaseChannel) {
     let resourcePath = "";
@@ -18,7 +28,9 @@ const getDiscordPath = function(releaseChannel) {
         resourcePath = path.join("/Applications", `${releaseChannel}.app`, "Contents", "Resources");
     }
     else {
-        const basedir = path.join(remote.app.getPath("userData"), "..", releaseChannel.toLowerCase().replace(" ", ""));
+        const basedir = isFlatpak
+            ? path.join(flatpakConfigDir, "discord")
+            : path.join(remote.app.getPath("userData"), "..", releaseChannel.toLowerCase().replace(" ", ""));
         if (!fs.existsSync(basedir)) return "";
         const version = fs.readdirSync(basedir).filter(f => fs.lstatSync(path.join(basedir, f)).isDirectory() && f.split(".").length > 1).sort()[0];
         if (!version) return "";
@@ -36,7 +48,9 @@ for (const channel in platforms) {
 export const getBrowsePath = function(channel) {
     if (process.platform === "win32") return path.join(process.env.LOCALAPPDATA, platforms[channel].replace(" ", ""));
     else if (process.platform === "darwin") return path.join("/Applications", `${platforms[channel]}.app`);
-    return path.join(remote.app.getPath("userData"), "..", platforms[channel].toLowerCase().replace(" ", ""));
+    return isFlatpak
+        ? path.join(flatpakConfigDir, "discord")
+        : path.join(remote.app.getPath("userData"), "..", platforms[channel].toLowerCase().replace(" ", ""));
 };
 
 export const validatePath = function(channel, proposedPath) {
