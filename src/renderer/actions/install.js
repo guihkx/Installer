@@ -54,11 +54,24 @@ async function downloadAsar() {
     try {
         const response = await getJSON(downloadUrl);
         const releases = response.body;
-        const asset = releases && releases.length ? releases[0].assets.find(a => a.name === "betterdiscord.asar") : "https://api.github.com/repos/BetterDiscord/BetterDiscord/releases/assets/39982244"; // temporary workaround
-        downloadUrl = asset.url;
+        const remoteAsar = releases && releases.length ? releases[0].assets.find(a => a.name === "betterdiscord.asar") : "https://api.github.com/repos/BetterDiscord/BetterDiscord/releases/assets/39982244"; // temporary workaround
+        downloadUrl = remoteAsar.url;
 
-        const resp = await downloadFile(downloadUrl);
         const originalFs = require("original-fs").promises; // because electron doesn't like when I write asar files
+        try {
+            const localAsar = await originalFs.stat(asarPath);
+            const localAsarDate = Math.floor(localAsar.mtimeMs);
+            const remoteAsarDate = Math.floor(new Date(remoteAsar.updated_at).getTime());
+
+            if (localAsar.size === remoteAsar.size && localAsarDate > remoteAsarDate) {
+                console.log(`localAsar: ${localAsarDate}\nremoteAsar: ${remoteAsarDate}`);
+                log("Download skipped (asar is up to date)");
+                return;
+            }
+        }
+        catch (err) {}
+        downloadUrl = remoteAsar.url;
+        const resp = await downloadFile(downloadUrl);
         await originalFs.writeFile(asarPath, resp.body);
     }
     catch (err) {
