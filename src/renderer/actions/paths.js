@@ -3,7 +3,7 @@ const fs = require("fs");
 const path = require("path");
 import {remote} from "electron";
 
-export const isFlatpak = !!process.env.BD_FLATPAK;
+export const isFlatpak = typeof process.env.BD_FLATPAK === "undefined" ? true : !!+process.env.BD_FLATPAK;
 export const flatpakConfigDir = isFlatpak
     ? execSync("flatpak run --command=sh com.discordapp.Discord -c 'printf -- \"$XDG_CONFIG_HOME\"'").toString()
     : "";
