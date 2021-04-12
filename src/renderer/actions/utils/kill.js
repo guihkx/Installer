@@ -5,6 +5,8 @@ import kill from "tree-kill";
 import {shell} from "electron";
 import {progress} from "../../stores/installation";
 import {log} from "./log";
+import {isFlatpak} from "../paths";
+import {spawn} from "child_process";
 
 const platforms = {stable: "Discord", ptb: "Discord PTB", canary: "Discord Canary"};
 export default async function killProcesses(channels, progressPerLoop, shouldRestart = true) {
@@ -26,7 +28,9 @@ export default async function killProcesses(channels, progressPerLoop, shouldRes
             const discordPid = results.find(p => parentPids.includes(p.pid));
             const bin = process.platform === "darwin" ? path.resolve(discordPid.bin, "..", "..", "..") : discordPid.bin;
             await new Promise(r => kill(discordPid.pid, r));
-            if (shouldRestart) setTimeout(() => shell.openPath(bin), 1000);
+            if (shouldRestart) setTimeout(() => isFlatpak
+                ? spawn("flatpak", ["run", "com.discordapp.Discord"], { detached: true })
+                : shell.openPath(bin), 1000);
             progress.set(progress.value + progressPerLoop);
         }
         catch (err) {
