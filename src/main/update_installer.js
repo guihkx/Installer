@@ -11,7 +11,7 @@ const getJSON = phin.defaults({
 });
 
 export default async function () {
-    const downloadUrl = "https://api.github.com/repos/BetterDiscord/Installer/releases";
+    const downloadUrl = "https://api.github.com/repos/guihkx/Installer/releases";
     console.info(`Better Discord Installer ${version}`);
 
     try {
