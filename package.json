@@ -3,7 +3,7 @@
   "productName": "BetterDiscord Installer",
   "description": "A simple standalone program which automates the installation, removal and maintenance of BetterDiscord.",
   "author": "BetterDiscord",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "license": "MIT",
   "scripts": {
     "dev": "electron-webpack dev",
@@ -27,7 +27,7 @@
     "eslint-plugin-svelte3": "^3.1.2",
     "find-process": "^1.4.4",
     "focus-visible": "^5.2.0",
-    "phin": "^3.5.1",
+    "phin": "^3.6.0",
     "svelte": "^3.38.2",
     "svelte-loader": "^3.0.0",
     "svelte-spa-router": "^3.1.0",
