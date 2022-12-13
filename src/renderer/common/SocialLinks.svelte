@@ -1,9 +1,9 @@
 <script>
-    import { tooltip } from "./tooltip";
+    import {tooltip} from "./tooltip";
     
     const webUrl = "https://betterdiscord.app";
     const githubUrl = "http://github.com/BetterDiscord/BetterDiscord";
-    const donateUrl = "https://www.patreon.com/Zerebos";
+    const donateUrl = "https://github.com/sponsors/rauenzi/";
 </script>
 
 <div class="social-links">
